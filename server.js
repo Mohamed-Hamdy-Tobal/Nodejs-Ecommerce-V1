@@ -2,30 +2,40 @@ import express from "express";
 import cors from "cors";
 import { config } from "./config/config.js";
 import { setupLogger } from "./middleware/logger.js";
+import { connectDB } from "./database/connection.js";
 
-const app = express();
+const startServer = async () => {
+  try {
+    await connectDB();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+    const app = express();
 
-setupLogger(app);
+    app.use(cors());
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+    setupLogger(app);
 
-app.use((req, res) => {
-  return res.status(404).json({
-    status: 404,
-    message: "this resource is not available",
-  });
-});
+    app.get("/", (req, res) => {
+      res.send("Hello World!");
+    });
 
-app.listen(config.port, () => {
-  console.log(
-    `app is running on port ${config.port} in ${
-      config.mode || "development"
-    } mode`
-  );
-});
+    app.use((req, res) => {
+      return res.status(404).json({
+        status: 404,
+        message: "this resource is not available",
+      });
+    });
+
+    app.listen(config.port, () => {
+      console.log(
+        `App is running on port ${config.port} in ${config.nodeEnv} mode`
+      );
+    });
+  } catch (error) {
+    console.error(`Error starting server: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+startServer();
