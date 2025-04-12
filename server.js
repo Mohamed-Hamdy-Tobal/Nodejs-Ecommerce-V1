@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import { config } from "./config/config.js";
 import { setupLogger } from "./middleware/logger.js";
-import { connectDB } from "./database/connection.js";
+import { connectDB } from "./database/dbConnection.js";
+import { categoryRouter } from "./routes/category.route.js";
 
 const startServer = async () => {
   try {
@@ -16,10 +17,13 @@ const startServer = async () => {
 
     setupLogger(app);
 
+    // Server Routes
     app.get("/", (req, res) => {
       res.send("Hello World!");
     });
+    app.use("/api/v1/category", categoryRouter);
 
+    // Handle Not Found Routes
     app.use((req, res) => {
       return res.status(404).json({
         status: 404,
@@ -39,3 +43,7 @@ const startServer = async () => {
 };
 
 startServer();
+
+// mobin
+// dribble
+// behance
