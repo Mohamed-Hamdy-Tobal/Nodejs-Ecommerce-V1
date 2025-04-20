@@ -1,56 +1,86 @@
+import slugify from "slugify";
 import CategoryModel from "../models/category.model.js";
+import expressAsyncHandler from "express-async-handler";
+import paginateResults from "../utils/pagination.js";
 
-export const getAllCategories = async (req, res) => {
-  try {
-    const categories = await CategoryModel.find();
-    console.log("Categories ARE : ", categories);
-    res.status(200).json({ success: true, categories });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Server Error", error });
+export const getAllCategories = expressAsyncHandler(async (req, res) => {
+  const { results, pagination } = await paginateResults(CategoryModel, req, {
+    sort: req.query.sort || "-createdAt", // Sort by creation date in descending order
+    select: req.query.fields || "",
+  });
+
+  console.log("Categories ARE : ", results);
+  res.status(200).json({
+    success: true,
+    pagination,
+    results,
+  });
+});
+
+export const getSingleCategory = expressAsyncHandler(async (req, res) => {
+  const category = await CategoryModel.findById(req.params.id);
+
+  console.log("Single Category is : ", category);
+
+  if (!category) {
+    return res
+      .status(404)
+      .json({ success: false, message: "category not found" });
   }
-};
 
-export const getSingleCategory = async (req, res) => {
-  try {
-    const category = await CategoryModel.findById(req.params.id);
+  res.status(200).json({ category });
+});
 
-    console.log("Single Category is : ", category);
-
-    if (!category) {
-      return res
-        .status(404)
-        .json({ success: false, message: "category not found" });
-    }
-
-    res.status(200).json({ success: true, category });
-  } catch (error) {
-    res
-      .status(400)
-      .json({ success: false, message: "Invalid category ID", error });
-  }
-};
-
-export const createCategory = async (req, res) => {
+export const createCategory = expressAsyncHandler(async (req, res) => {
   const { name } = req.body;
-  console.log("req.body IS : ", req.body);
 
-  try {
-    const category = new CategoryModel({
-      name,
-    });
+  const category = await CategoryModel.create({
+    name,
+    slug: slugify(name),
+  });
+  return res.status(201).json({
+    status: 201,
+    message: "Success Create",
+    category,
+  });
+});
 
-    await category.save();
-    return res.status(201).json({
-      status: 201,
-      message: "Success",
-      category,
-    });
-  } catch (err) {
-    console.error("Error :", error);
-    return res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      err,
-    });
+export const updateCategory = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+
+  const category = await CategoryModel.findByIdAndUpdate(
+    id,
+    { name, slug: slugify(name) },
+    { new: true }
+  );
+
+  if (!category) {
+    return res
+      .status(404)
+      .json({ success: false, message: "category not found" });
   }
-};
+
+  return res.status(200).json({
+    status: 200,
+    message: "Success Update",
+    category,
+  });
+});
+
+export const deleteCategory = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const category = await CategoryModel.findByIdAndDelete(id);
+
+  if (!category) {
+    return res
+      .status(404)
+      .json({ success: false, message: "category not found" });
+  }
+
+  return res.status(204).json({
+    status: 204,
+    message: "Success Deleted",
+  });
+});
