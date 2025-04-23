@@ -4,6 +4,7 @@ import { config } from "./config/config.js";
 import { setupLogger } from "./middleware/logger.js";
 import { connectDB } from "./database/dbConnection.js";
 import { categoryRouter } from "./routes/category.route.js";
+import { AppError, errorHandler } from "./utils/errorHandlers.js";
 
 const startServer = async () => {
   try {
@@ -17,24 +18,30 @@ const startServer = async () => {
 
     setupLogger(app);
 
-    // Server Routes
     app.get("/", (req, res) => {
       res.send("Hello World!");
     });
     app.use("/api/v1/category", categoryRouter);
 
-    // Handle Not Found Routes
-    app.use((req, res) => {
-      return res.status(404).json({
-        status: 404,
-        message: "this resource is not available",
-      });
+    app.use((req, res, next) => {
+      next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
+    });
+    app.use(errorHandler);
+
+    const server = app.listen(config.port, () => {
+      console.log(
+        `App is running on port ${config.port} in ${config.mode} mode`
+      );
     });
 
-    app.listen(config.port, () => {
-      console.log(
-        `App is running on port ${config.port} in ${config.nodeEnv} mode`
-      );
+    // Handle uncaught exceptions and unhandled rejections that occur after the server has started
+    // Handle Errors Outside Express
+    process.on("unhandledRejection", (err) => {
+      console.error("Unhandled Rejection:", err);
+      server.close(() => {
+        console.error("Shutting down server due to unhandled rejection");
+        process.exit(1);
+      });
     });
   } catch (error) {
     console.error(`Error starting server: ${error.message}`);
@@ -44,6 +51,4 @@ const startServer = async () => {
 
 startServer();
 
-// mobin
-// dribble
-// behance
+// 44 next video
