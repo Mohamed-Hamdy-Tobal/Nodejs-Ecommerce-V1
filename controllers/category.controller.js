@@ -2,6 +2,7 @@ import slugify from "slugify";
 import CategoryModel from "../models/category.model.js";
 import expressAsyncHandler from "express-async-handler";
 import paginateResults from "../utils/pagination.js";
+import { AppError } from "../utils/errorHandlers.js";
 
 export const getAllCategories = expressAsyncHandler(async (req, res) => {
   const { results, pagination } = await paginateResults(CategoryModel, req, {
@@ -17,21 +18,20 @@ export const getAllCategories = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const getSingleCategory = expressAsyncHandler(async (req, res) => {
-  const category = await CategoryModel.findById(req.params.id);
+export const getSingleCategory = expressAsyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  const category = await CategoryModel.findById(id);
 
   console.log("Single Category is : ", category);
 
   if (!category) {
-    return res
-      .status(404)
-      .json({ success: false, message: "category not found" });
+    return next(new AppError(`category not found for this id ${id}`, 404));
   }
 
   res.status(200).json({ category });
 });
 
-export const createCategory = expressAsyncHandler(async (req, res) => {
+export const createCategory = expressAsyncHandler(async (req, res,) => {
   const { name } = req.body;
 
   const category = await CategoryModel.create({
@@ -45,7 +45,7 @@ export const createCategory = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const updateCategory = expressAsyncHandler(async (req, res) => {
+export const updateCategory = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name } = req.body;
 
@@ -56,9 +56,7 @@ export const updateCategory = expressAsyncHandler(async (req, res) => {
   );
 
   if (!category) {
-    return res
-      .status(404)
-      .json({ success: false, message: "category not found" });
+    return next(new AppError(`category not found for this id ${id}`, 404));
   }
 
   return res.status(200).json({
@@ -68,15 +66,13 @@ export const updateCategory = expressAsyncHandler(async (req, res) => {
   });
 });
 
-export const deleteCategory = expressAsyncHandler(async (req, res) => {
+export const deleteCategory = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
   const category = await CategoryModel.findByIdAndDelete(id);
 
   if (!category) {
-    return res
-      .status(404)
-      .json({ success: false, message: "category not found" });
+    return next(new AppError(`category not found for this id ${id}`, 404));
   }
 
   return res.status(204).json({
