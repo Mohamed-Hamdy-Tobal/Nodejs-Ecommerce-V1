@@ -6,15 +6,24 @@ import {
   getSingleCategory,
   updateCategory,
 } from "../controllers/category.controller.js";
+import {
+  createCategoryValidation,
+  getCategoryValidation,
+  updateCategoryValidation,
+  deleteCategoryValidation,
+} from "../validation/categoryValidation.js";
 
 const router = express.Router();
 
-router.route("/").get(getAllCategories).post(createCategory);
+router
+  .route("/")
+  .get(getAllCategories)
+  .post(createCategoryValidation, createCategory);
 
 router
   .route("/:id")
-  .get(getSingleCategory)
-  .put(updateCategory)
-  .delete(deleteCategory);
+  .get(getCategoryValidation, getSingleCategory)
+  .put(updateCategoryValidation, updateCategory)
+  .delete(deleteCategoryValidation, deleteCategory);
 
 export const categoryRouter = router;
