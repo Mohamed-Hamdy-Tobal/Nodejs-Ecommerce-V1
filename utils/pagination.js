@@ -9,8 +9,8 @@
 // Pagination utility function
 const paginateResults = async (model, req, options = {}) => {
   // Default pagination parameters
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
   // Build query based on provided options
