@@ -12,13 +12,14 @@ import {
   updateCategoryValidation,
   deleteCategoryValidation,
 } from "../validation/categoryValidation.js";
+import { subCategoryRouter } from "./subCategory.route.js";
 
 const router = express.Router();
 
-router
-  .route("/")
-  .get(getAllCategories)
-  .post(createCategoryValidation, createCategory);
+router.use("/:categoryId/sub-category", subCategoryRouter); // Mount the subCategoryRouter on the category router
+// This will allow you to access sub-categories under a specific category ID, e.g., /api/v1/category/:categoryId/sub-categories
+
+router.route("/").get(getAllCategories).post(createCategoryValidation, createCategory);
 
 router
   .route("/:id")
