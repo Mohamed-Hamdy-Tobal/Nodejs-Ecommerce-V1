@@ -10,7 +10,6 @@ export const getAllCategories = expressAsyncHandler(async (req, res) => {
     select: req.query.fields || "",
   });
 
-  console.log("Categories ARE : ", results);
   res.status(200).json({
     success: true,
     pagination,
@@ -22,8 +21,6 @@ export const getSingleCategory = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const category = await CategoryModel.findById(id);
 
-  console.log("Single Category is : ", category);
-
   if (!category) {
     return next(new AppError(`category not found for this id ${id}`, 404));
   }
@@ -31,7 +28,7 @@ export const getSingleCategory = expressAsyncHandler(async (req, res, next) => {
   res.status(200).json({ category });
 });
 
-export const createCategory = expressAsyncHandler(async (req, res,) => {
+export const createCategory = expressAsyncHandler(async (req, res) => {
   const { name } = req.body;
 
   const category = await CategoryModel.create({
