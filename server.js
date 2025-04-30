@@ -6,6 +6,7 @@ import { connectDB } from "./database/dbConnection.js";
 import { categoryRouter } from "./routes/category.route.js";
 import { AppError, errorHandler } from "./utils/errorHandlers.js";
 import { subCategoryRouter } from "./routes/subCategory.route.js";
+import { brandRouter } from "./routes/brand.route.js";
 
 const startServer = async () => {
   try {
@@ -24,6 +25,7 @@ const startServer = async () => {
     });
     app.use("/api/v1/category", categoryRouter);
     app.use("/api/v1/sub-category", subCategoryRouter);
+    app.use("/api/v1/brand", brandRouter);
 
     app.use((req, res, next) => {
       next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
