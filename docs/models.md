@@ -27,20 +27,22 @@
 
 ## 🔹 Product
 
-- `title`: String - required
-- `slug`: String - auto-generated
-- `description`: String
-- `quantity`: Number
-- `sold`: Number - default: 0
-- `price`: Number - required
-- `priceAfterDiscount`: Number
-- `colors`: [String]
-- `imageCover`: String
-- `images`: [String]
-- `category`: ObjectId - required
-- `subcategories`: [ObjectId]
-- `brand`: ObjectId
-- `ratingsAverage`: Number - default: 0
-- `ratingsQuantity`: Number - default: 0
-
----
+| Field                  | Type       | Description                                           |
+| ---------------------- | ---------- | ----------------------------------------------------- |
+| `title`                | `String`   | **Required**. Must be unique, between 3–32 characters |
+| `slug`                 | `String`   | Auto-generated from title, stored in lowercase        |
+| `description`          | `String`   | **Required**. Minimum 20 characters                   |
+| `price`                | `Number`   | **Required**. Must be greater than 0                  |
+| `price_after_discount` | `Number`   | Must be less than original price, default: `0`        |
+| `colors`               | `[String]` | Optional. Product available colors                    |
+| `image`                | `[String]` | Array of image URLs, default: empty array             |
+| `quantity`             | `Number`   | **Required**. Must be >= 0                            |
+| `sold`                 | `Number`   | Number of items sold, default: `0`                    |
+| `category`             | `ObjectId` | **Required**. Reference to `Category` model           |
+| `subCategory`          | `ObjectId` | Optional. Reference to `SubCategory` model            |
+| `brand`                | `ObjectId` | **Required**. Reference to `Brand` model              |
+| `ratings`              | `Number`   | Average rating (1 to 5), default: `0`                 |
+| `totalRating`          | `Number`   | Total number of ratings received, default: `0`        |
+| `isActive`             | `Boolean`  | If product is published, default: `false`             |
+| `createdAt`            | `Date`     | Auto-generated timestamp                              |
+| `updatedAt`            | `Date`     | Auto-updated timestamp                                |
