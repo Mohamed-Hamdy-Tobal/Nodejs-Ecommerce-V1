@@ -23,7 +23,13 @@ const paginateResults = async (model, req, options = {}) => {
 
   // Handle population of referenced documents if needed ===>  لجلب بيانات مرتبطة (references)
   if (options.populate) {
-    query = query.populate(options.populate);
+    if (Array.isArray(options.populate)) {
+      options.populate.forEach((field) => {
+        query = query.populate(field);
+      });
+    } else {
+      query = query.populate(options.populate);
+    }
   }
 
   // Apply selection if provided ===>>  لجلب بيانات محددة
