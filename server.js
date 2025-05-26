@@ -7,6 +7,7 @@ import { categoryRouter } from "./routes/category.route.js";
 import { AppError, errorHandler } from "./utils/errorHandlers.js";
 import { subCategoryRouter } from "./routes/subCategory.route.js";
 import { brandRouter } from "./routes/brand.route.js";
+import { productRouter } from "./routes/product.route.js";
 
 const startServer = async () => {
   try {
@@ -26,16 +27,16 @@ const startServer = async () => {
     app.use("/api/v1/category", categoryRouter);
     app.use("/api/v1/sub-category", subCategoryRouter);
     app.use("/api/v1/brand", brandRouter);
+    app.use("/api/v1/products", productRouter);
 
     app.use((req, res, next) => {
       next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
     });
+    
     app.use(errorHandler);
 
     const server = app.listen(config.port, () => {
-      console.log(
-        `App is running on port ${config.port} in ${config.mode} mode`
-      );
+      console.log(`App is running on port ${config.port} in ${config.mode} mode`);
     });
 
     // Handle uncaught exceptions and unhandled rejections that occur after the server has started
@@ -55,4 +56,4 @@ const startServer = async () => {
 
 startServer();
 
-// 54 next video
+// 64 next video
