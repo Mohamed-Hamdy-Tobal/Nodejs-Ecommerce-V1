@@ -42,7 +42,7 @@
 | `subCategory`          | `ObjectId` | Optional. Reference to `SubCategory` model            |
 | `brand`                | `ObjectId` | **Required**. Reference to `Brand` model              |
 | `ratings`              | `Number`   | Average rating (1 to 5), default: `0`                 |
-| `totalRating`          | `Number`   | Total number of ratings received, default: `0`        |
+| `ratingsQuantity`          | `Number`   | Total number of ratings received, default: `0`        |
 | `isActive`             | `Boolean`  | If product is published, default: `false`             |
 | `createdAt`            | `Date`     | Auto-generated timestamp                              |
 | `updatedAt`            | `Date`     | Auto-updated timestamp                                |

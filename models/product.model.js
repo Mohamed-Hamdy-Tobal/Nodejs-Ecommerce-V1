@@ -70,22 +70,24 @@ const productSchema = new mongoose.Schema(
       ref: "Category",
       required: [true, "Product category is required"],
     },
-    subCategory: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "SubCategory",
-    },
+    subCategories: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SubCategory",
+      },
+    ],
     brand: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Brand",
       required: [true, "Product brand is required"],
     },
-    ratings: {
+    ratingsAverage: {
       type: Number,
       default: 0,
       min: [0, "Rating must be above 1"],
       max: [5, "Rating must be below 5"],
     },
-    totalRating: {
+    ratingsQuantity: {
       type: Number,
       default: 0,
     },
