@@ -11,7 +11,7 @@ export const getAllProducts = expressAsyncHandler(async (req, res) => {
     populate: [
       { path: "category", select: "name -_id" },
       { path: "brand", select: "name -_id" },
-      { path: "subCategory", select: "name -_id" },
+      { path: "subCategories", select: "name -_id" },
     ],
   });
 
@@ -28,7 +28,7 @@ export const getSingleProduct = expressAsyncHandler(async (req, res, next) => {
   const product = await ProductModel.findById(id).populate([
     { path: "category", select: "name -_id" },
     { path: "brand", select: "name -_id" },
-    { path: "subCategory", select: "name -_id" },
+    { path: "subCategories", select: "name -_id" },
   ]);
 
   console.log("Single Product is : ", product);
@@ -51,10 +51,10 @@ export const createProduct = expressAsyncHandler(async (req, res, next) => {
     quantity,
     sold,
     category,
-    subCategory,
+    subCategories,
     brand,
-    ratings,
-    totalRating,
+    ratingsAverage,
+    ratingsQuantity,
     isActive,
   } = req.body;
 
@@ -67,12 +67,12 @@ export const createProduct = expressAsyncHandler(async (req, res, next) => {
     colors,
     image,
     quantity,
-    subCategory,
+    subCategories,
     sold,
     category,
     brand,
-    ratings,
-    totalRating,
+    ratingsAverage,
+    ratingsQuantity,
     isActive,
   });
 
