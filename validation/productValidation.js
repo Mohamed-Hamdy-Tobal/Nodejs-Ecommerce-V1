@@ -81,24 +81,48 @@ export const createProductValidation = [
       return true;
     }),
 
-  check("subCategory")
-    .optional()
-    .isMongoId()
-    .withMessage("Invalid subCategory ID format")
-    .custom(async (value) => {
-      const subCategory = await SubCategoryModel.findById(value);
-      if (!subCategory) {
-        throw new Error("subCategory not found");
+  check("subCategories")
+    .optional() // الحقل اختياري
+    .isArray()
+    .withMessage("subCategories must be an array") // لازم يكون مصفوفة
+    .custom((arr) => arr.every((id) => /^[0-9a-fA-F]{24}$/.test(id))) // كل ID في المصفوفة لازم يكون MongoID
+    .withMessage("All subCategory IDs must be valid MongoIDs")
+    .custom(async (subCategoriesIds) => {
+      const subCategoriesExist = await SubCategoryModel.find({
+        _id: { $in: subCategoriesIds },
+      }); // Find documents where _id exists and is one of the provided subCategory IDs
+
+      // لو مفيش ولا ID موجود فعلاً في الداتا
+      if (subCategoriesExist.length !== subCategoriesIds.length) {
+        throw new Error("One or more subCategories not found");
       }
+
+      return true;
+    })
+    .custom(async (value, { req }) => {
+      if (!req.body.category) return true;
+
+      const subCategoriesOfCategory = await SubCategoryModel.find({
+        category: req.body.category,
+      }).select("_id");
+
+      const validSubCategoryIds = subCategoriesOfCategory.map((sub) => sub._id.toString());
+
+      const allBelong = value.every((id) => validSubCategoryIds.includes(id));
+
+      if (!allBelong) {
+        throw new Error("One or more subCategories do not belong to the given category");
+      }
+
       return true;
     }),
 
-  check("ratings")
+  check("ratingsAverage")
     .optional()
     .isFloat({ min: 1, max: 5 })
     .withMessage("Ratings must be between 1 and 5"),
 
-  check("totalRating")
+  check("ratingsQuantity")
     .optional()
     .isInt({ min: 0 })
     .withMessage("Total ratings must be a non-negative number"),
@@ -172,24 +196,48 @@ export const updateProductValidation = [
       }
       return true;
     }),
-  check("subCategory")
-    .optional()
-    .isMongoId()
-    .withMessage("Invalid subCategory ID format")
-    .custom(async (value) => {
-      const subCategory = await SubCategoryModel.findById(value);
-      if (!subCategory) {
-        throw new Error("subCategory not found");
+  check("subCategories")
+    .optional() // الحقل اختياري
+    .isArray()
+    .withMessage("subCategories must be an array") // لازم يكون مصفوفة
+    .custom((arr) => arr.every((id) => /^[0-9a-fA-F]{24}$/.test(id))) // كل ID في المصفوفة لازم يكون MongoID
+    .withMessage("All subCategory IDs must be valid MongoIDs")
+    .custom(async (subCategoriesIds) => {
+      const subCategoriesExist = await SubCategoryModel.find({
+        _id: { $in: subCategoriesIds },
+      }); // Find documents where _id exists and is one of the provided subCategory IDs
+
+      // لو مفيش ولا ID موجود فعلاً في الداتا
+      if (subCategoriesExist.length !== subCategoriesIds.length) {
+        throw new Error("One or more subCategories not found");
       }
+
+      return true;
+    })
+    .custom(async (value, { req }) => {
+      if (!req.body.category) return true;
+
+      const subCategoriesOfCategory = await SubCategoryModel.find({
+        category: req.body.category,
+      }).select("_id");
+
+      const validSubCategoryIds = subCategoriesOfCategory.map((sub) => sub._id.toString());
+
+      const allBelong = value.every((id) => validSubCategoryIds.includes(id));
+
+      if (!allBelong) {
+        throw new Error("One or more subCategories do not belong to the given category");
+      }
+
       return true;
     }),
 
-  check("ratings")
+  check("ratingsAverage")
     .optional()
     .isFloat({ min: 1, max: 5 })
     .withMessage("Ratings must be between 1 and 5"),
 
-  check("totalRating")
+  check("ratingsQuantity")
     .optional()
     .isInt({ min: 0 })
     .withMessage("Total ratings must be a non-negative number"),
