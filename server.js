@@ -32,7 +32,7 @@ const startServer = async () => {
     app.use((req, res, next) => {
       next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
     });
-    
+
     app.use(errorHandler);
 
     const server = app.listen(config.port, () => {
@@ -55,5 +55,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// 64 next video
