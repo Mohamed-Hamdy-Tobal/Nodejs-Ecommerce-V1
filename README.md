@@ -60,13 +60,18 @@ MONGODB_URI=mongodb://localhost:27017/ecommerce
 ## 📁 Project Structure
 
 ```
+├── config/
 ├── controllers/
+├── data/
+├── database/
+├── docs/
 ├── models/
 ├── routes/
 ├── validation/
 ├── middlewares/
 ├── config/
 ├── docs/
+├── utils/
 ├── server.js
 ```
 
