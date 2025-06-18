@@ -3,11 +3,15 @@ import expressAsyncHandler from "express-async-handler";
 import paginateResults from "../utils/pagination.js";
 import { AppError } from "../utils/errorHandlers.js";
 import ProductModel from "../models/product.model.js";
+import { productFilters } from "../utils/filters/productFilters.js";
 
 export const getAllProducts = expressAsyncHandler(async (req, res) => {
+  const { filter, sort, select } = productFilters(req.query);
+
   const { results, pagination } = await paginateResults(ProductModel, req, {
-    sort: req.query.sort || "-createdAt",
-    select: req.query.fields || "",
+    filter,
+    sort: sort,
+    select: select,
     populate: [
       { path: "category", select: "name -_id" },
       { path: "brand", select: "name -_id" },
@@ -15,7 +19,7 @@ export const getAllProducts = expressAsyncHandler(async (req, res) => {
     ],
   });
 
-  console.log("Products ARE : ", results);
+  // console.log("Products ARE : ", results);
   res.status(200).json({
     success: true,
     pagination,
@@ -123,3 +127,5 @@ export const deleteProduct = expressAsyncHandler(async (req, res, next) => {
     message: "Success Deleted",
   });
 });
+
+// 71
