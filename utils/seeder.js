@@ -1,5 +1,4 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import colors from "colors"; 
+import colors from "colors";
 import fs from "node:fs";
 import { connectDB } from "../database/dbConnection.js";
 import ProductModel from "../models/product.model.js";

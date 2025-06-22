@@ -1,6 +1,3 @@
-/* eslint-disable arrow-body-style */
-/* eslint-disable node/no-unsupported-features/es-syntax */
-/* eslint-disable no-else-return */
 import { config } from "../config/config.js";
 
 // Create a custom error class for application errors
