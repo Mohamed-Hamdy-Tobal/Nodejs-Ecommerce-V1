@@ -3,17 +3,20 @@ import expressAsyncHandler from "express-async-handler";
 import paginateResults from "../utils/pagination.js";
 import { AppError } from "../utils/errorHandlers.js";
 import SubCategoryModel from "../models/subCategory.model.js";
+import { FilterFactory } from "../utils/filters/filterFactory.js";
 
 export const getAllSubCategories = expressAsyncHandler(async (req, res) => {
   console.log("req.params : ", req.params);
+  const categoriesFilter = FilterFactory.getFilter("categories");
+  const { filter, sort, select } = categoriesFilter(req.query);
   const { categoryId } = req.params; // Extract categoryId from request parameters
-  const filter = categoryId ? { category: categoryId } : {}; // Filter by category if categoryId is provided
+  const param_filter = categoryId ? { category: categoryId } : {}; // Filter by category if categoryId is provided
 
   const { results, pagination } = await paginateResults(SubCategoryModel, req, {
-    sort: req.query.sort || "-createdAt",
-    select: req.query.fields || "",
+    sort,
+    select,
     populate: "category",
-    filter,
+    filter: { ...filter, ...param_filter },
   });
 
   res.status(200).json({

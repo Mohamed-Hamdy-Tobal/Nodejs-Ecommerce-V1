@@ -3,12 +3,13 @@ import expressAsyncHandler from "express-async-handler";
 import paginateResults from "../utils/pagination.js";
 import { AppError } from "../utils/errorHandlers.js";
 import BrandModel from "../models/brand.model.js";
+import { FilterFactory } from "../utils/filters/filterFactory.js";
 
 export const getAllBrands = expressAsyncHandler(async (req, res) => {
-  const { results, pagination } = await paginateResults(BrandModel, req, {
-    sort: req.query.sort || "-createdAt",
-    select: req.query.fields || "",
-  });
+  const brandFilter = FilterFactory.getFilter("brands");
+  const { filter, sort, select } = brandFilter(req.query);
+
+  const { results, pagination } = await paginateResults(BrandModel, req, { filter, sort, select });
 
   console.log("Brands ARE : ", results);
   res.status(200).json({

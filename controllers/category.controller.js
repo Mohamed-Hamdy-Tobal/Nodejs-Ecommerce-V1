@@ -3,11 +3,16 @@ import CategoryModel from "../models/category.model.js";
 import expressAsyncHandler from "express-async-handler";
 import paginateResults from "../utils/pagination.js";
 import { AppError } from "../utils/errorHandlers.js";
+import { FilterFactory } from "../utils/filters/filterFactory.js";
 
 export const getAllCategories = expressAsyncHandler(async (req, res) => {
+  const categoriesFilter = FilterFactory.getFilter("categories");
+  const { filter, sort, select } = categoriesFilter(req.query);
+
   const { results, pagination } = await paginateResults(CategoryModel, req, {
-    sort: req.query.sort || "-createdAt", // Sort by creation date in descending order
-    select: req.query.fields || "",
+    filter,
+    sort,
+    select,
   });
 
   res.status(200).json({

@@ -3,10 +3,11 @@ import expressAsyncHandler from "express-async-handler";
 import paginateResults from "../utils/pagination.js";
 import { AppError } from "../utils/errorHandlers.js";
 import ProductModel from "../models/product.model.js";
-import { productFilters } from "../utils/filters/productFilters.js";
+import { FilterFactory } from "../utils/filters/filterFactory.js";
 
 export const getAllProducts = expressAsyncHandler(async (req, res) => {
-  const { filter, sort, select } = productFilters(req.query);
+  const productFilter = FilterFactory.getFilter("products");
+  const { filter, sort, select } = productFilter(req.query);
 
   const { results, pagination } = await paginateResults(ProductModel, req, {
     filter,
@@ -90,7 +91,6 @@ export const createProduct = expressAsyncHandler(async (req, res, next) => {
 export const updateProduct = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
 
-  // eslint-disable-next-line node/no-unsupported-features/es-syntax
   const updateData = { ...req.body };
 
   if (updateData.title) {
@@ -127,5 +127,3 @@ export const deleteProduct = expressAsyncHandler(async (req, res, next) => {
     message: "Success Deleted",
   });
 });
-
-// 71
