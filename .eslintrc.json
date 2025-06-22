@@ -17,6 +17,8 @@
     "no-return-await": "off",
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
+    "node/no-unsupported-features/es-syntax": "off",
+    "arrow-body-style": "off",
     "no-undef": "error",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
     "no-unused-vars": ["warn", { "argsIgnorePattern": "req|res|next|val" }],
@@ -26,5 +28,9 @@
 
     // Add this to disable file extension rule
     "import/extensions": "off"
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
   }
 }
