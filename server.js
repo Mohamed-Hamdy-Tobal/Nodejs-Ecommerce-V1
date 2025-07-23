@@ -8,6 +8,7 @@ import { AppError, errorHandler } from "./utils/errorHandlers.js";
 import { subCategoryRouter } from "./routes/subCategory.route.js";
 import { brandRouter } from "./routes/brand.route.js";
 import { productRouter } from "./routes/product.route.js";
+import { userRouter } from "./routes/user.route.js";
 
 const startServer = async () => {
   try {
@@ -28,6 +29,7 @@ const startServer = async () => {
     app.use("/api/v1/sub-category", subCategoryRouter);
     app.use("/api/v1/brand", brandRouter);
     app.use("/api/v1/products", productRouter);
+    app.use("/api/v1/users", userRouter);
 
     app.use((req, res, next) => {
       next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
