@@ -34,7 +34,7 @@ export const filterConfigs = {
     search: ["name", "email", "phone"],
     dates: ["createdAt", "lastLogin", "birthDate"],
     defaultSort: "-createdAt",
-    defaultSelect: "-__v -password",
+    defaultSelect: "-__v -password -refreshToken -tokenVersion -passwordChangedAt",
   },
 
   // Categories Filter Configuration

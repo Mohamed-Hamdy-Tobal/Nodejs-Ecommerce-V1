@@ -21,7 +21,13 @@ export const getAllUsers = expressAsyncHandler(async (req, res) => {
 
 export const getSingleUser = expressAsyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const user = await UserModel.findById(id);
+
+  const user = await UserModel.findById(id, {
+    password: 0,
+    refreshToken: 0,
+    tokenVersion: 0,
+    passwordChangedAt: 0,
+  });
 
   if (!user) {
     return next(new AppError(`User not found for this id ${id}`, 404));
@@ -120,6 +126,7 @@ export const changeUserPassword = expressAsyncHandler(async (req, res, next) => 
   }
 
   user.password = newPassword;
+  user.refreshToken = null;
   await user.save();
 
   res.status(200).json({
