@@ -39,3 +39,15 @@ export const registerValidation = [
 
   validatorMiddleware,
 ];
+
+export const loginValidation = [
+  check("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Invalid email format"),
+
+  check("password").notEmpty().withMessage("Password is required"),
+
+  validatorMiddleware,
+];
