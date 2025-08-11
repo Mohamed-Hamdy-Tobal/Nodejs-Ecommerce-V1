@@ -14,11 +14,12 @@ import {
   deleteUserValidation,
   changeUserPasswordValidation,
 } from "../validation/userValidation.js";
+import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
 // GET /users - Get all users
-router.get("/", getAllUsers);
+router.get("/", protect, getAllUsers);
 
 // GET /users/:id - Get a single user by ID
 router.get("/:id", getUserValidation, getSingleUser);
