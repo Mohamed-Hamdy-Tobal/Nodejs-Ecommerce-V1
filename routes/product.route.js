@@ -12,15 +12,16 @@ import {
   getProductValidation,
   updateProductValidation,
 } from "../validation/productValidation.js";
+import { adminProtect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.route("/").get(getAllProducts).post(createProductValidation, createProduct);
+router.route("/").get(getAllProducts).post(adminProtect, createProductValidation, createProduct);
 
 router
   .route("/:id")
   .get(getProductValidation, getSingleProduct)
-  .put(updateProductValidation, updateProduct)
-  .delete(deleteProductValidation, deleteProduct);
+  .put(adminProtect, updateProductValidation, updateProduct)
+  .delete(adminProtect, deleteProductValidation, deleteProduct);
 
 export const productRouter = router;

@@ -13,6 +13,7 @@ import {
   getSubCategoryValidation,
   updateSubCategoryValidation,
 } from "../validation/subCategoryValidation.js";
+import { adminProtect } from "../middleware/auth.middleware.js";
 
 // mergeParams allows you to access params from parent routes
 // Because Express does not automatically inherit parameters in sub-routers.
@@ -22,12 +23,12 @@ const router = express.Router({ mergeParams: true });
 router
   .route("/")
   .get(getAllSubCategories)
-  .post(setCategoryID, createSubCategoryValidation, createSubCategory);
+  .post(adminProtect, setCategoryID, createSubCategoryValidation, createSubCategory);
 
 router
   .route("/:id")
   .get(getSubCategoryValidation, getSingleSubCategory)
-  .put(updateSubCategoryValidation, updateSubCategory)
-  .delete(deleteSubCategoryValidation, deleteSubCategory);
+  .put(adminProtect, updateSubCategoryValidation, updateSubCategory)
+  .delete(adminProtect, deleteSubCategoryValidation, deleteSubCategory);
 
 export const subCategoryRouter = router;
