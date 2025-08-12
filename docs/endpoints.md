@@ -18,6 +18,24 @@ This is a fully-featured RESTful API for managing categories, sub-categories, br
 
 ---
 
+### 🔐 Authentication Endpoints
+
+| Method | Endpoint                    | Description                    | Auth Required |
+| ------ | --------------------------- | ------------------------------ | ------------- |
+| POST   | `/api/v1/auth/register`     | User registration              | No            |
+| POST   | `/api/v1/auth/login`        | User login                     | No            |
+| POST   | `/api/v1/auth/refresh-token`| Refresh access token           | No            |
+| POST   | `/api/v1/auth/logout`       | User logout                    | Yes           |
+| POST   | `/api/v1/auth/forget-password` | Request password reset OTP   | No            |
+| POST   | `/api/v1/auth/verify-otp`   | Verify password reset OTP      | No            |
+| POST   | `/api/v1/auth/reset-password` | Reset password with OTP      | No            |
+
+> ✅ All endpoints include proper validation and error handling.
+> 🔒 Logout requires valid authentication token.
+> 🔐 Password reset follows a three-step process: Request OTP → Verify OTP → Reset Password.
+
+---
+
 ### 🔹 Category Endpoints
 
 | Method | Endpoint               | Description               |
@@ -104,3 +122,5 @@ This setup allows fast development and clean, reusable logic across models.
 
 ```http
 GET /api/v1/product?brand=Samsung&price_gte=500&search=smartphone&sort=-price&fields=title,price
+
+```

@@ -50,6 +50,8 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    passwordResetCode: String,
+    passwordResetExpires: Date,
   },
   { timestamps: true }
 );
@@ -61,7 +63,7 @@ userSchema.pre("save", async function (next) {
   this.password = await bcrypt.hash(this.password, 12);
 
   // Increment token version when password changes (invalidates all existing tokens)
- if (this.isModified("password") && !this.isNew) {
+  if (this.isModified("password") && !this.isNew) {
     this.passwordChangedAt = Date.now() - 1000; // subtract 1 second to ensure token iat is after this
   }
 
