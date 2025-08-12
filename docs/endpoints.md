@@ -36,6 +36,32 @@ This is a fully-featured RESTful API for managing categories, sub-categories, br
 
 ---
 
+### 👤 User Management Endpoints
+
+#### 🔐 Authenticated User Routes (Token Required)
+| Method | Endpoint                    | Description                    | Auth Required |
+| ------ | --------------------------- | ------------------------------ | ------------- |
+| GET    | `/api/v1/users/me`          | Get current user data          | Yes (User)    |
+| PUT    | `/api/v1/users/me`          | Update current user data       | Yes (User)    |
+| PUT    | `/api/v1/users/me/change-password` | Change current user password | Yes (User)    |
+
+#### 👑 Admin User Management Routes (Admin Token Required)
+| Method | Endpoint                    | Description                    | Auth Required |
+| ------ | --------------------------- | ------------------------------ | ------------- |
+| GET    | `/api/v1/users`             | Get all users                  | Yes (Admin)   |
+| GET    | `/api/v1/users/:id`         | Get single user by ID          | Yes (Admin)   |
+| POST   | `/api/v1/users`             | Create new user                | Yes (Admin)   |
+| PUT    | `/api/v1/users/:id`         | Update user by ID              | Yes (Admin)   |
+| PUT    | `/api/v1/users/:id/change-password` | Change user password    | Yes (Admin)   |
+| DELETE | `/api/v1/users/:id`         | Delete user by ID              | Yes (Admin)   |
+
+> ✅ All endpoints include proper validation and error handling.
+> 🔒 User routes require valid authentication token.
+> 👑 Admin routes require admin privileges.
+> 🔐 Password change endpoints include current password verification.
+
+---
+
 ### 🔹 Category Endpoints
 
 | Method | Endpoint               | Description               |

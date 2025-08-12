@@ -6,6 +6,9 @@ import {
   updateUser,
   deleteUser,
   changeUserPassword,
+  getMe,
+  updateMe,
+  changeMyPassword,
 } from "../controllers/user.controller.js";
 import {
   getUserValidation,
@@ -13,10 +16,25 @@ import {
   updateUserValidation,
   deleteUserValidation,
   changeUserPasswordValidation,
+  updateMeValidation,
+  changeMyPasswordValidation,
 } from "../validation/userValidation.js";
-import { adminProtect } from "../middleware/auth.middleware.js";
+import { adminProtect, protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
+
+// ===== AUTHENTICATED USER ROUTES (using protect middleware) =====
+
+// GET /users/me - Get current user data by token
+router.get("/me", protect, getMe);
+
+// PUT /users/me - Update current user data by token
+router.put("/me", protect, updateMeValidation, updateMe);
+
+// PUT /users/me/change-password - Change current user password by token
+router.put("/me/change-password", protect, changeMyPasswordValidation, changeMyPassword);
+
+// ===== ADMIN ROUTES (using adminProtect middleware) =====
 
 // GET /users - Get all users
 router.get("/", adminProtect, getAllUsers);

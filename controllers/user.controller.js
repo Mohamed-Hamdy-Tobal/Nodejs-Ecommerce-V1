@@ -134,3 +134,114 @@ export const changeUserPassword = expressAsyncHandler(async (req, res, next) => 
     message: "Password updated successfully",
   });
 });
+
+export const getMe = expressAsyncHandler(async (req, res) => {
+  const {
+    _id,
+    name,
+    email,
+    slug,
+    phone,
+    profileImg,
+    role,
+    active,
+    wishlist,
+    address,
+    createdAt,
+    updatedAt,
+  } = req.user;
+
+  res.status(200).json({
+    status: 200,
+    message: "User data retrieved successfully",
+    user: {
+      id: _id,
+      name,
+      email,
+      slug,
+      phone,
+      profileImg,
+      role,
+      active,
+      wishlist,
+      address,
+      createdAt,
+      updatedAt,
+    },
+  });
+});
+
+export const updateMe = expressAsyncHandler(async (req, res, next) => {
+  const { name, phone, profileImg, address } = req.body;
+
+  const updateData = {
+    name,
+    phone,
+    profileImg,
+    address,
+  };
+
+  Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+
+  if (name) {
+    updateData.slug = slugify(name);
+  }
+
+  const { id } = req.user;
+  const user = await UserModel.findById(id);
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const updatedUser = await UserModel.findByIdAndUpdate(id, updateData, {
+    new: true,
+    runValidators: true,
+  }).select("-password -refreshToken -passwordResetCode -passwordResetExpires");
+
+  res.status(200).json({
+    status: 200,
+    message: "User updated successfully",
+    user: updatedUser,
+  });
+});
+
+export const changeMyPassword = expressAsyncHandler(async (req, res, next) => {
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return next(new AppError("All password fields are required", 400));
+  }
+
+  if (newPassword.length < 6) {
+    return next(new AppError("New password must be at least 6 characters long", 400));
+  }
+
+  if (newPassword !== confirmPassword) {
+    return next(new AppError("New password and confirm password do not match", 400));
+  }
+
+  const { id } = req.user;
+  const user = await UserModel.findById(id).select("+password");
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+
+  const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+
+  if (!isCurrentPasswordValid) {
+    return next(new AppError("Current password is incorrect", 400));
+  }
+
+  user.password = newPassword;
+  user.refreshToken = null;
+  user.passwordChangedAt = new Date();
+
+  await user.save();
+
+  res.status(200).json({
+    status: 200,
+    message: "Password changed successfully",
+  });
+});

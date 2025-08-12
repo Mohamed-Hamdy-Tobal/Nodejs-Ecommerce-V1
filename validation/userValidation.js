@@ -141,3 +141,62 @@ export const changeUserPasswordValidation = [
 
   validatorMiddleware,
 ];
+
+export const updateMeValidation = [
+  check("name")
+    .optional()
+    .isLength({ min: 3 })
+    .withMessage("Name is too short, minimum 3 characters")
+    .isLength({ max: 32 })
+    .withMessage("Name is too long, maximum 32 characters"),
+
+  check("phone")
+    .optional()
+    .isMobilePhone(["ar-EG", "ar-SA"])
+    .withMessage("Phone number is not valid")
+    .custom(async (val, { req }) => {
+      if (val) {
+        const User = await UserModel.findOne({ phone: val });
+        if (User && User._id.toString() !== req.user.id) {
+          throw new Error("Phone number already exists");
+        }
+      }
+      return true;
+    }),
+
+  check("profileImg")
+    .optional()
+    .isString()
+    .withMessage("Profile image must be a string"),
+
+  check("address")
+    .optional()
+    .isString()
+    .withMessage("Address must be a string"),
+
+  validatorMiddleware,
+];
+
+export const changeMyPasswordValidation = [
+  check("currentPassword")
+    .notEmpty()
+    .withMessage("Current password is required"),
+
+  check("newPassword")
+    .notEmpty()
+    .withMessage("New password is required")
+    .isLength({ min: 6 })
+    .withMessage("New password is too short, minimum 6 characters"),
+
+  check("confirmPassword")
+    .notEmpty()
+    .withMessage("Confirm password is required")
+    .custom((val, { req }) => {
+      if (val !== req.body.newPassword) {
+        throw new Error("Confirm password does not match new password");
+      }
+      return true;
+    }),
+
+  validatorMiddleware,
+];
