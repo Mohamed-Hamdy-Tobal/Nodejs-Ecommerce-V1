@@ -10,6 +10,11 @@ import { brandRouter } from "./routes/brand.route.js";
 import { productRouter } from "./routes/product.route.js";
 import { userRouter } from "./routes/user.route.js";
 import { authRouter } from "./routes/auth.route.js";
+import { rateLimit } from "express-rate-limit";
+import hpp from "hpp";
+import mongoSanitize from "express-mongo-sanitize";
+import xssClean from "xss-clean";
+import helmet from "helmet";
 
 const startServer = async () => {
   try {
@@ -17,12 +22,44 @@ const startServer = async () => {
 
     const app = express();
 
-    app.use(cors());
-    app.use(express.json());
+    /**
+     * Security Middlewares
+     */
+    app.use(hpp()); // Prevent HTTP Parameter Pollution
+    app.use(mongoSanitize()); // Prevent NoSQL Injection
+    app.use(xssClean()); // Prevent XSS
+    app.use(helmet()); // Set security headers
+
+    /**
+     * Rate Limiting
+     */
+    const limiter = rateLimit({
+      windowMs: 15 * 60 * 1000, // 15 minutes
+      limit: 100,
+      message: "Too many requests, please try again later.",
+      standardHeaders: "draft-8",
+    });
+    app.use("/api", limiter);
+
+    /**
+     * Body Parsers
+     */
+    app.use(express.json({ limit: "20kb" }));
     app.use(express.urlencoded({ extended: true }));
 
+    /**
+     * CORS
+     */
+    app.use(cors());
+
+    /**
+     * Logging
+     */
     setupLogger(app);
 
+    /**
+     * Routes
+     */
     app.get("/", (req, res) => {
       res.send("Hello World!");
     });
@@ -33,19 +70,28 @@ const startServer = async () => {
     app.use("/api/v1/users", userRouter);
     app.use("/api/v1/auth", authRouter);
 
-
+    /**
+     * Handle 404
+     */
     app.use((req, res, next) => {
       next(new AppError(`Cannot find ${req.originalUrl} on this server`, 404));
     });
 
+    /**
+     * Error Handler
+     */
     app.use(errorHandler);
 
+    /**
+     * Start Server
+     */
     const server = app.listen(config.port, () => {
       console.log(`App is running on port ${config.port} in ${config.mode} mode`);
     });
 
-    // Handle uncaught exceptions and unhandled rejections that occur after the server has started
-    // Handle Errors Outside Express
+    /**
+     * Handle unhandled Promise rejections
+     */
     process.on("unhandledRejection", (err) => {
       console.error("Unhandled Rejection:", err);
       server.close(() => {
@@ -53,6 +99,7 @@ const startServer = async () => {
         process.exit(1);
       });
     });
+
   } catch (error) {
     console.error(`Error starting server: ${error.message}`);
     process.exit(1);
@@ -60,5 +107,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// 13
